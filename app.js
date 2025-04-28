@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const task = require('./routes/tasks');
-
+const connectDB = require('./db/connect');
+require('dotenv').config();
 
 // middleware to parse JSON data
 app.use(express.json());
@@ -13,7 +14,18 @@ app.get('/hello', (req, res) => {
 
 app.use('/api/v1/tasks', task);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-}); 
+const port = 3000;  
+
+const start = async () => { 
+  try {
+    // connect to the database
+    await connectDB(process.env.MONGO_URI);
+    // start the server
+    app.listen(port, () => {
+      console.log(`Server is listening on port ${port}...`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+start();  
